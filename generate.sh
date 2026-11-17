@@ -2,23 +2,23 @@
 #
 rm -rf .tmp/ || true
 
-TAG_VERSION="3.6.0"
-IOS_URL="https://download.videolan.org/pub/cocoapods/prod/MobileVLCKit-3.6.0-c73b779f-dd8bfdba.tar.xz"
-MACOS_URL="https://download.videolan.org/pub/cocoapods/prod/VLCKit-3.6.0-c73b779f-dd8bfdba.tar.xz"
-TVOS_URL="https://download.videolan.org/cocoapods/prod/TVVLCKit-3.6.0-c73b779f-dd8bfdba.tar.xz"
+TAG_VERSION="3.7.2"
+IOS_URL="https://download.videolan.org/pub/cocoapods/prod/MobileVLCKit-3.7.2-3e42ae47-79128878.tar.xz"
+MACOS_URL="https://download.videolan.org/pub/cocoapods/prod/VLCKit-3.7.2-3e42ae47-79128878.tar.xz"
+TVOS_URL="https://download.videolan.org/cocoapods/prod/TVVLCKit-3.7.2-3e42ae47-79128878.tar.xz"
 
 mkdir .tmp/
 
 #Download and generate MobileVLCKit
-wget -O .tmp/MobileVLCKit.tar.xz $IOS_URL
+curl -fL -o .tmp/MobileVLCKit.tar.xz $IOS_URL
 tar -xf .tmp/MobileVLCKit.tar.xz -C .tmp/
 
 #Download and generate VLCKit
-wget -O .tmp/VLCKit.tar.xz $MACOS_URL
+curl -fL -o .tmp/VLCKit.tar.xz $MACOS_URL
 tar -xf .tmp/VLCKit.tar.xz -C .tmp/
 
 #Download and generate TVVLCKit
-wget -O .tmp/TVVLCKit.tar.xz $TVOS_URL
+curl -fL -o .tmp/TVVLCKit.tar.xz $TVOS_URL
 tar -xf .tmp/TVVLCKit.tar.xz -C .tmp/
 
 IOS_LOCATION=".tmp/MobileVLCKit-binary/MobileVLCKit.xcframework"
@@ -42,8 +42,8 @@ xcodebuild -create-xcframework \
 ditto -c -k --sequesterRsrc --keepParent ".tmp/VLCKit-all.xcframework" ".tmp/VLCKit-all.xcframework.zip"
 
 #Update package file
-PACKAGE_HASH=$(sha256sum ".tmp/VLCKit-all.xcframework.zip" | awk '{ print $1 }')
-PACKAGE_STRING="Target.binaryTarget(name: \"VLCKit-all\", url: \"https:\/\/github.com\/tylerjonesio\/vlckit-spm\/releases\/download\/$TAG_VERSION\/VLCKit-all.xcframework.zip\", checksum: \"$PACKAGE_HASH\")"
+PACKAGE_HASH=$(shasum -a 256 ".tmp/VLCKit-all.xcframework.zip" | awk '{ print $1 }')
+PACKAGE_STRING="Target.binaryTarget(name: \"VLCKit-all\", url: \"https:\/\/github.com\/naimaudio\/vlckit-spm\/releases\/download\/$TAG_VERSION\/VLCKit-all.xcframework.zip\", checksum: \"$PACKAGE_HASH\")"
 echo "Changing package definition for xcframework with hash $PACKAGE_HASH"
 sed -i '' -e "s/let vlcBinary.*/let vlcBinary = $PACKAGE_STRING/" Package.swift
 
